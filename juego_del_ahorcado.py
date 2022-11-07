@@ -68,7 +68,6 @@ HANGMANPICS = ['''
 
 def limpiar_pantalla():
     time.sleep(0.5)
-#   if platform.system() == 'Windows':
     os.system ("cls")
 
 
@@ -120,7 +119,6 @@ def run():
     
     limpiar_pantalla()
     interfase(guiones)
-    # print(palabra)
 
     palabra_long = len(guiones.replace(" ",""))   
     guiones = list(guiones.replace(" ",""))
@@ -132,8 +130,7 @@ def run():
         vueltas = 0
         hangmanpics(vidas)
         opcion = input("Insert a letter: ")
-
-        for i,y in enumerate(palabra):  ##solo me deje insertar una vez cada letra
+        for i,y in enumerate(palabra):  
             if opcion == y and not guiones[i].isalpha():
                 guiones[i] = y
                 count +=1
