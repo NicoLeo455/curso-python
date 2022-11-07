@@ -3,17 +3,6 @@ import platform
 import os
 import time
 
-
-HANG = ['''
-     _                                             
-    | |                                            
-    | |__   __ _ _ __   __ _ _ __ ___   __ _ _ __  
-    | '_ \ / _` | '_ \ / _` | '_ ` _ \ / _` | '_ \ 
-    | | | | (_| | | | | (_| | | | | | | (_| | | | |
-    |_| |_|\__,_|_| |_|\__, |_| |_| |_|\__,_|_| |_|
-                        __/ |                      
-                       |___/   ''']
-
 HANGMANPICS = ['''
   +---+
   |   |
@@ -69,18 +58,13 @@ HANGMANPICS = ['''
 def limpiar_pantalla():
     time.sleep(0.5)
     os.system ("cls")
-
-
-def hang():
-    for i in hang:
-        print(i) 
-
+    
 
 def hangmanpics(k):
     print(HANGMANPICS[k])
 
 
-def filtrar_acentos(palabra):             ##MODIFICAR
+def filtrar_acentos(palabra): 
     palabra = palabra.replace("á","a")
     palabra = palabra.replace("é","e")
     palabra = palabra.replace("í","i")
