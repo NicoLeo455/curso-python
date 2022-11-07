@@ -1,107 +1,156 @@
-from cgi import print_directory
 import random
 import platform
 import os
 import time
 
+
+HANG = ['''
+     _                                             
+    | |                                            
+    | |__   __ _ _ __   __ _ _ __ ___   __ _ _ __  
+    | '_ \ / _` | '_ \ / _` | '_ ` _ \ / _` | '_ \ 
+    | | | | (_| | | | | (_| | | | | | | (_| | | | |
+    |_| |_|\__,_|_| |_|\__, |_| |_| |_|\__,_|_| |_|
+                        __/ |                      
+                       |___/   ''']
+
+HANGMANPICS = ['''
+  +---+
+  |   |
+      |
+      |
+      |
+      |
+=========''', '''
+  +---+
+  |   |
+  O   |
+      |
+      |
+      |
+=========''', '''
+  +---+
+  |   |
+  O   |
+  |   |
+      |
+      |
+=========''', '''
+  +---+
+  |   |
+  O   |
+ /|   |
+      |
+      |
+=========''', '''
+  +---+
+  |   |
+  O   |
+ /|\  |
+      |
+      |
+=========''', '''
+  +---+
+  |   |
+  O   |
+ /|\  |
+ /    |
+      |
+=========''', '''
+  +---+
+  |   |
+  O   |
+ /|\  |
+ / \  |
+      |
+=========''']
+
+
 def limpiar_pantalla():
-    time.sleep(0)
-    if platform.system() == 'Windows':
-        os.system ("cls")
+    time.sleep(0.5)
+#   if platform.system() == 'Windows':
+    os.system ("cls")
 
 
-def read(aleatorio):
-    words = {}  #agendar las palabras en una agenda y luego usar get para ubicarla con el numero aleatorio que se creara posteriormente con ranInt
-    cont = 1
-    with open ("./words.txt", "r", encoding="utf-8") as f:
-        for palabra in f:
-            words[cont]=palabra
-            cont +=1
-    return words.get(aleatorio)
+def hang():
+    for i in hang:
+        print(i) 
 
 
-def filtrar_acentos(palabra):
+def hangmanpics(k):
+    print(HANGMANPICS[k])
+
+
+def filtrar_acentos(palabra):             ##MODIFICAR
     palabra = palabra.replace("á","a")
     palabra = palabra.replace("é","e")
     palabra = palabra.replace("í","i")
     palabra = palabra.replace("ó","o")
     palabra = palabra.replace("ú","u")
     palabra = palabra.replace(" ","")
-    return palabra    
+    return palabra 
 
 
-def guiones(long):
-    guiones = []
-    for g in range(long-1):
-        guiones.append("- ")
-    return guiones
+def read(aleatorio):
+    words = {}  #agendar las palabras en una agenda y luego usar get para ubicarla con el numero aleatorio que se creara posteriormente con ranInt
+    cont = 1
+    with open ("./Archivos/words.txt", "r", encoding="utf-8") as f:
+        dict_words={index:value for index,value in enumerate(f)}        #dictionary comprehension
+    return dict_words.get(aleatorio)
 
 
-def run():
-    
-    aleatorio = random.randint(1,144)
-    palabra = read(aleatorio)
-    palabra=filtrar_acentos(palabra)
-    long = len(palabra)             #Se saca la longitud de la palabra
-    palabra = palabra[:long-1].lower()      #Se pasa a minuscula
-
-    ubicacion = guiones(long)
-
-    limpiar_pantalla()
-
+def interfase(g):
     #Interface del juego
     print("========= Star Game =========")
     print("\n")
     print("        Hangman Game        ")
     print("You most insert one letter")
     print("\n")
-    for u in ubicacion:
-        print(u+"",end="")    #guiones
+    for i in g:
+        print(i,end="")    #guiones
     print("\n")
+
+
+def run():
+    aleatorio = random.randint(1,144)
+    palabra = filtrar_acentos(read(aleatorio))  #Palabra alaeatoria elegida
+    long = len(palabra)            #Se saca la longitud de la palabra
+    palabra = palabra[:long-1].lower()      #Se pasa a minuscula y se quita \n
+    guiones = (long-1) * " -"   ## agregar los guiones a una vaiable nueva llamada "ubicacion"
     
+    limpiar_pantalla()
+    interfase(guiones)
+    # print(palabra)
 
+    palabra_long = len(guiones.replace(" ",""))   
+    guiones = list(guiones.replace(" ",""))
+    count = 0
+    vidas = -6
 
-    #Crear crear una lista con todas las letras de la palabra aleatorio 
-    #fragmentar la palabra!
-    letras=[]
-    for y in palabra:    #list comprehension
-        letras.append(y) 
-    #print(letras)     
-
-
-    #Elegir la opcion, filtrarla y reemplazarla por los guiones depende su ubicacion
     while True:
-        #print(letras)
-        #print(ubicacion)
-        opcion= input("Inserte una letra: ").lower()
-        if opcion.isnumeric() == True or len(opcion) != 1:
-            print("Ingrese solo una letra por favor!")
-        elif opcion.isalpha():
-            for index,value in enumerate(letras):              
-                if value == opcion:
-                    for u,y in enumerate(ubicacion):
-                        if u==index:
-                            ubicacion[u]=opcion
-                    limpiar_pantalla()        
-                    #print(y+"",end="")   #guiones
-                    #print(letras)
-                    print("========= Start Game =========")
-                    print("\n")
-                    print("        Hangman Game        ")
-                    print("You must insert one letter for start game")
-                    print("\n")
-                    for y in ubicacion:
-                        print(y+"",end="")   #guiones
-                    print("\n")
-        if letras == ubicacion:
-            break
-                              
-    print("Congratulation, you are win the game")
+        print("Usted tiene " + str(-vidas) + " vidas!")
+        vueltas = 0
+        hangmanpics(vidas)
+        opcion = input("Insert a letter: ")
 
-       
-    #necesito comparar la opcion elegida por el usuario y letra por letra de la lista llamada "letras"
-    #print(palabra,":",str(aleatorio), " y su logitud es de",str(long-1))
+        for i,y in enumerate(palabra):  ##solo me deje insertar una vez cada letra
+            if opcion == y and not guiones[i].isalpha():
+                guiones[i] = y
+                count +=1
+                vueltas = 1
+        if vueltas == 0:   
+            vidas +=1   
+                
+        if count >= palabra_long: 
+            print("\n -- > Cogratulation, you are win!!!")
+            break
+        elif vidas == 0:
+            print("\n -- > Sorry, you lost !!!")
+            break
+
+        limpiar_pantalla()       
+        interfase(guiones)
+    print("Your word is --> " + str(palabra))
 
 if __name__=="__main__":
     run()
-

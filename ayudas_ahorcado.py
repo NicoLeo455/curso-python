@@ -35,13 +35,13 @@ print(mi_agenda.get(x))
 
 
 def limpiar_pantalla():
-    time.sleep(2)
+    time.sleep(1)
 
     if platform.system() == 'Windows':
         os.system ("cls")
 
 def run():
-
+    
     mi_agenda={
     "Nicolas": 54656,
     "Facundo":1234,
@@ -54,7 +54,7 @@ def run():
     x = input("Ingrese un nombre: ")
     print(mi_agenda.get(x))
 
-    limpiar_pantalla()
+
 
 
 if __name__=="__main__":
